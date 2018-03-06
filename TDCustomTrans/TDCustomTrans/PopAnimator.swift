@@ -15,20 +15,24 @@ class PopAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     var presenting = true
     var originFrame = CGRect.zero
     var dismissCompletion: (()->Void)?
-
     
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return duration
     }
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
+        
+        // containerView is where your animations will live,
         let containerView = transitionContext.containerView
+        // toView is the new view to present
         let toView = transitionContext.view(forKey: .to)!
+        // herbview if the current View (which is shown on screen)
         let herbView = presenting ? toView :
             transitionContext.view(forKey: .from)!
         
         let initialFrame = presenting ? originFrame : herbView.frame
         let finalFrame = presenting ? herbView.frame : originFrame
+        // calculate the scale factor we need to apply on each axis as we animate between each view.
         
         let xScaleFactor = presenting ?
             
@@ -43,6 +47,7 @@ class PopAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         let scaleTransform = CGAffineTransform(scaleX: xScaleFactor,
                                                y: yScaleFactor)
 
+        // When presenting the new view, we set its scale and position so it exactly matches the size and location of the initial frame.
         if presenting {
             herbView.transform = scaleTransform
             herbView.center = CGPoint(
@@ -53,6 +58,8 @@ class PopAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         
         containerView.addSubview(toView)
         containerView.bringSubview(toFront: herbView)
+        
+        // Core logic of animation
         
         UIView.animate(withDuration: duration, delay:0.0,
                        usingSpringWithDamping: 0.4, initialSpringVelocity: 0.0,
@@ -65,25 +72,9 @@ class PopAnimator: NSObject, UIViewControllerAnimatedTransitioning {
                         if !self.presenting {
                             self.dismissCompletion?()
                         }
+                        // completeTransition() on the transition context in the animation completion block; this tells UIKit that your transition animations are done and that UIKit is free to wrap up the view controller transition.
                         transitionContext.completeTransition(true)
         })
     }
-    
-        /*
-        let containerView = transitionContext.containerView
-        let toView = transitionContext.view(forKey: .to)!
-        //        let fromView = transitionContext.view(forKey: .from)!
-        
-        containerView.addSubview(toView)
-        toView.alpha = 0.0
-        UIView.animate(withDuration: duration,
-                       animations: {
-                        toView.alpha = 1.0
-        },
-                       completion: { _ in
-                        transitionContext.completeTransition(true)
-        })
-        */
-    
     
 }

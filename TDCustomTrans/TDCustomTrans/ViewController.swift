@@ -20,6 +20,8 @@ class ViewController: UIViewController , UIViewControllerTransitioningDelegate{
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // handler when presented VC is dismissed.
+        // Show the image that is selected.
         transition.dismissCompletion = {
             self.selectedImage!.isHidden = false
         }
@@ -66,7 +68,7 @@ class ViewController: UIViewController , UIViewControllerTransitioningDelegate{
             //attach tap detector
             imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapImageView)))
             
-//            let imageView = listView.viewWithTag(i) as! UIImageView
+            // Set image position in scrollview.
             imageView.frame = CGRect(
                 x: CGFloat(i) * itemWidth + CGFloat(i+1) * horizontalPadding,
                 y: 0.0,
@@ -85,6 +87,7 @@ class ViewController: UIViewController , UIViewControllerTransitioningDelegate{
     
     //MARK: Actions
     
+    // Image view tapped.
     @objc func didTapImageView(_ tap: UITapGestureRecognizer) {
         selectedImage = tap.view as? UIImageView
 
@@ -99,12 +102,12 @@ class ViewController: UIViewController , UIViewControllerTransitioningDelegate{
     }
 }
 
+// Transition animation delegates
 extension ViewController{
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         transition.originFrame =
             selectedImage!.superview!.convert(selectedImage!.frame, to: nil)
-        
-        transition.presenting = true
+        transition.presenting = true 
         selectedImage!.isHidden = true
         return transition
     }
